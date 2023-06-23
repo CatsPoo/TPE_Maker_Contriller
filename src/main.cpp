@@ -4,6 +4,8 @@
 void regular_mocde();
 void temp_select_mode_control();
 void LCD_show(bool);
+void read_endoder_status();
+String convert_double_to_string(double);
 
 //LCD wireing shema in /img folder
 const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
@@ -38,7 +40,7 @@ void setup() {
 
   lcd.begin(16,2);
   current_temp = 0;
-  requred_temp=0;
+  requred_temp=220;
   temp_select_blink_timestemp = 0;
   display_refresh_timestemp =0;
   lcd.clear();
@@ -62,13 +64,14 @@ void loop() {
 }
 
 void LCD_show(bool show_required_temp){
+  String current_temp_str = convert_double_to_string(current_temp);
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print("Temp: ");
-  lcd.print(current_temp);
+  lcd.print(current_temp_str);
   lcd.print("/");
   if(show_required_temp)
-    lcd.print(requred_temp);
+    lcd.print(int(requred_temp));
 }
 
 void read_endoder_status()
@@ -106,4 +109,10 @@ void regular_mocde(){
     display_refresh_timestemp = millis();
     LCD_show(true);
   }
+}
+
+String convert_double_to_string(double num){
+  char buffer[7];
+  dtostrf(num, 4, 1, buffer);
+  return String(buffer);
 }
