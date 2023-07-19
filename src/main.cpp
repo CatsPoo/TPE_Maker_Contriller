@@ -1,29 +1,41 @@
 #include <Arduino.h>
 #include <LiquidCrystal.h>
+#include <max6675.h>
 
 void regular_mocde();
 void temp_select_mode_control();
 void LCD_show(bool);
 void read_endoder_status();
 String convert_double_to_string(double);
+double readTemperature();
 
 //LCD wireing shema in /img folder
-const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
-const int encoder_A_pin = 6, encoder_B_pin = 7,encoder_C_pin = 8;
+const int rs = 12, en = 13, d4 = 11, d5 = 10, d6 = 9, d7 = 7;
+const int encoder_A_pin = 0, encoder_B_pin = 1,encoder_C_pin = 2;
+
+int thermoDO = 4;
+int thermoCS = 5;
+int thermoCLK = 6;
+
+
 double current_temp;
 double requred_temp;
+double last_temp_read;
 
 unsigned long temp_select_blink_timestemp;
 unsigned long display_refresh_timestemp;
+unsigned long temp_read_timestemp;
+
 const int temp_select_blink_interval = 500;
 const int display_refresh__interval = 500;
+const int temp_read_interval = 500;
 
 const int current_temp_x = 0;
 const int current_temp_y = 7;
 const int required_temp_x = 0;
 const int tequired_temp_y = 13;
 
-bool temp_select_mode = true;
+bool temp_select_mode = false;
 bool show_required_temp = true;
 
 int counter = 0;
@@ -31,6 +43,7 @@ int currentStateA;
 int lastStateA;
 
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+MAX6675 thermocouple(thermoCLK, thermoCS, thermoDO);
 
 void setup() {
   // Define LCD Display
@@ -39,10 +52,17 @@ void setup() {
   pinMode(encoder_C_pin,INPUT);
 
   lcd.begin(16,2);
+
+  Serial.begin(9600);
+  
+
   current_temp = 0;
-  requred_temp=220;
+  requred_temp=0;
   temp_select_blink_timestemp = 0;
   display_refresh_timestemp =0;
+  temp_read_timestemp =0;
+  last_temp_read=0;
+
   lcd.clear();
   LCD_show(true);
 
@@ -54,6 +74,8 @@ void loop() {
   if(digitalRead(encoder_C_pin)){
     temp_select_mode = !temp_select_mode;
   }
+  current_temp = readTemperature();
+
   //choose display mode
   if(temp_select_mode){
     read_endoder_status();
@@ -115,4 +137,12 @@ String convert_double_to_string(double num){
   char buffer[7];
   dtostrf(num, 4, 1, buffer);
   return String(buffer);
+}
+
+double readTemperature() {
+  if(millis() - temp_read_timestemp >= temp_read_interval){
+    last_temp_read = thermocouple.readCelsius();
+    temp_read_timestemp = millis();
+  }
+  return last_temp_read;
 }
