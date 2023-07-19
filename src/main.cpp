@@ -19,7 +19,7 @@ int thermoCLK = 6;
 
 
 double current_temp;
-double requred_temp;
+int requred_temp;
 double last_temp_read;
 
 unsigned long temp_select_blink_timestemp;
@@ -34,6 +34,9 @@ const int current_temp_x = 0;
 const int current_temp_y = 7;
 const int required_temp_x = 0;
 const int tequired_temp_y = 13;
+const int min_required_temp =0;
+const int max_required_temp = 250;
+const int rotery_encoder_step = 10;
 
 bool temp_select_mode = false;
 bool show_required_temp = true;
@@ -108,14 +111,18 @@ void read_endoder_status()
     // the encoder is rotating CCW so decrement
     if (digitalRead(encoder_B_pin) != currentStateA)
     {
-      requred_temp += 10;
+      if(requred_temp <= max_required_temp - rotery_encoder_step)
+        requred_temp += rotery_encoder_step;
     }
     else
     {
       // Encoder is rotating CW so increment
-      requred_temp -= 10;
+      if(requred_temp >= min_required_temp + rotery_encoder_step)
+        requred_temp -= rotery_encoder_step;
     }
+    Serial.println(requred_temp);
   }
+  lastStateA = currentStateA;
 }
 
 void temp_select_mode_control(){
