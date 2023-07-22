@@ -246,8 +246,6 @@ void HotendUpdate(){
 
       int PID_value = CalcPidValues();
       // Now we can write the PWM signal to the mosfet on digital pin D3
-      Serial.println(current_temp);
-      delay(20);
       analogWrite(hotent_pwm_pin, 255 - PID_value);
       previous_error = PID_error;
 
