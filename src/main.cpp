@@ -59,6 +59,8 @@ const int stepper_step_pin = 10;
 
 const int hotent_pwm_pin = 3;
 
+const int stepper_control_switch_pin = 12;
+
 //encoder controls consts
 const int min_required_temp = 0;
 const int max_required_temp = 250;
@@ -119,6 +121,7 @@ void setup()
   pinMode(hotent_pwm_pin,OUTPUT);
   pinMode(stepper_dir_pin,OUTPUT);
   pinMode(stepper_step_pin,OUTPUT);
+  pinMode(stepper_control_switch_pin,INPUT);
 
   TCCR2B = TCCR2B & B11111000 | 0x03;    // pin 3 and 11 PWM f
   digitalWrite(hotent_pwm_pin,HIGH);
@@ -160,7 +163,9 @@ void loop()
     regular_mocde();
 
   HotendUpdate();
-  StepperMove(1);
+  
+  if(digitalRead(stepper_control_switch_pin) == HIGH)
+    StepperMove(1);
 
 }
 
