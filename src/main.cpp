@@ -2,6 +2,7 @@
 #include <LiquidCrystal.h>
 #include <max6675.h>
 
+//functions signitures
 void regular_mocde();
 void temp_select_mode_control();
 void LCD_show(bool);
@@ -10,8 +11,9 @@ String convert_double_to_string(double);
 double readTemperature();
 int CalcPidValues();
 void HotendUpdate();
+void StepperMove(int);
 
-
+//pins const setup
 /*    LCD Module  ==>   Arduino
  *    1              ==>     Gnd
  *    2              ==>     5V
@@ -30,7 +32,12 @@ void HotendUpdate();
  *    15             ==>     5V
  *    16             ==>     Gnd      */
 // LCD wireing shema in /img folder
-const int rs = 12, en = 13, d4 = A2, d5 = A1, d6 = A0, d7 = 7;
+const int lcd_rs_pin = 12;
+const int lcd_en_pin = 13;
+const int lcd_A2_pin = A2;
+const int lcd_A1_pin = A1;
+const int lcd_A0_pin = A0;
+const int lcd_d7_pin = 7;
 
 /*    Encoder Module  ==>   Arduino
  *    Clk              ==>     D0
@@ -39,59 +46,69 @@ const int rs = 12, en = 13, d4 = A2, d5 = A1, d6 = A0, d7 = 7;
  *    Switch_pin_A     ==>     D2
  *    Switch_Pin_B     ==>     Gnd (Pull off)
  *    */
-const int encoder_A_pin = 0, encoder_B_pin = 1, encoder_C_pin = 2;
+const int encoder_A_pin = 0;
+const int encoder_B_pin = 1;
+const int encoder_C_pin = 2;
 
-int thermoDO = 4;
-int thermoCS = 5;
-int thermoCLK = 6;
+const int thermo_DO_pin = 4;
+const int thermo_CS_pin = 5;
+const int thermo_CLK_pin = 6;
 
-int stepper_dir_pin = 9;
-int stepper_step_pin = 10;
+const int stepper_dir_pin = 9;
+const int stepper_step_pin = 10;
 
 const int hotent_pwm_pin = 3;
 
+//encoder controls consts
+const int min_required_temp = 0;
+const int max_required_temp = 250;
+const int rotery_encoder_step = 10;
+
+
+//encoder vars
+int currentStateA;
+int lastStateA;
+
+//temperature and  pid  vars
 double current_temp;
 int requred_temp;
 double last_temp_read;
 float PID_error = 0;
 float previous_error = 0;
 int PID_value = 0;
-float elapsed_PID_time, PID_time, PID_Time_prev;
+float elapsed_PID_time;
+float PID_time;
+float PID_Time_prev;
+int PID_p = 0;
+int PID_i = 0;
+int PID_d = 0;
 
 // PID constants
 int kp = 40.1;
 int ki = 9.2;
 int kd = 1.2;
 
-int PID_p = 0;
-int PID_i = 0;
-int PID_d = 0;
-
+//timers time stemp
 unsigned long temp_select_blink_timestemp;
 unsigned long display_refresh_timestemp;
 unsigned long temp_read_timestemp;
 unsigned long hotend_temp_update_timestemp;
 
+//timers intervals
 const int temp_select_blink_interval = 500;
 const int display_refresh__interval = 500;
 const int temp_read_interval = 500;
 const int hotend_temp_update_interval = 300;
 
-
-const int min_required_temp = 0;
-const int max_required_temp = 250;
-const int rotery_encoder_step = 10;
-
+//menye vars
 bool temp_select_mode = false;
 bool show_required_temp = true;
 
-int stepper_delay_time = 1500;
-int counter = 0;
-int currentStateA;
-int lastStateA;
+const int stepper_delay_time = 1500;
 
-LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
-MAX6675 thermocouple(thermoCLK, thermoCS, thermoDO);
+
+LiquidCrystal lcd(lcd_rs_pin, lcd_en_pin, lcd_A2_pin, lcd_A1_pin, lcd_A0_pin, lcd_d7_pin);
+MAX6675 thermocouple(thermo_CLK_pin, thermo_CS_pin, thermo_DO_pin);
 
 void setup()
 {
@@ -143,7 +160,7 @@ void loop()
     regular_mocde();
 
   HotendUpdate();
-  StepperMove();
+  StepperMove(1);
 
 }
 
