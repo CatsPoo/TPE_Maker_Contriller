@@ -45,6 +45,9 @@ int thermoDO = 4;
 int thermoCS = 5;
 int thermoCLK = 6;
 
+int stepper_dir_pin = 9;
+int stepper_step_pin = 10;
+
 const int hotent_pwm_pin = 3;
 
 double current_temp;
@@ -96,9 +99,13 @@ void setup()
   pinMode(encoder_B_pin, INPUT);
   pinMode(encoder_C_pin, INPUT);
   pinMode(hotent_pwm_pin,OUTPUT);
+  pinMode(stepper_dir_pin,OUTPUT);
+  pinMode(stepper_step_pin,OUTPUT);
 
   TCCR2B = TCCR2B & B11111000 | 0x03;    // pin 3 and 11 PWM f
   digitalWrite(hotent_pwm_pin,HIGH);
+  digitalWrite(stepper_dir_pin,HIGH);
+
   lcd.begin(16, 2);
 
   Serial.begin(9600);
@@ -135,6 +142,11 @@ void loop()
     regular_mocde();
 
   HotendUpdate();
+
+  digitalWrite(stepper_step_pin,HIGH);
+  delayMicroseconds(500);
+  digitalWrite(stepper_step_pin,LOW);
+  delayMicroseconds(500);
 }
 
 void LCD_show(bool show_required_temp)
