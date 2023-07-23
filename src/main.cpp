@@ -85,6 +85,7 @@ const int rotery_encoder_step = 10;
 bool temp_select_mode = false;
 bool show_required_temp = true;
 
+int stepper_delay_time = 1500;
 int counter = 0;
 int currentStateA;
 int lastStateA;
@@ -144,9 +145,9 @@ void loop()
   HotendUpdate();
 
   digitalWrite(stepper_step_pin,HIGH);
-  delayMicroseconds(500);
+  delayMicroseconds(stepper_delay_time);
   digitalWrite(stepper_step_pin,LOW);
-  delayMicroseconds(500);
+  delayMicroseconds(stepper_delay_time);
 }
 
 void LCD_show(bool show_required_temp)
