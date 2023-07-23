@@ -143,11 +143,8 @@ void loop()
     regular_mocde();
 
   HotendUpdate();
+  StepperMove();
 
-  digitalWrite(stepper_step_pin,HIGH);
-  delayMicroseconds(stepper_delay_time);
-  digitalWrite(stepper_step_pin,LOW);
-  delayMicroseconds(stepper_delay_time);
 }
 
 void LCD_show(bool show_required_temp)
@@ -269,4 +266,15 @@ void HotendUpdate(){
   //hotend off
     digitalWrite(hotent_pwm_pin,HIGH);
 
+}
+
+void StepperMove(int stepes)
+{
+  for (int i = 0; i < stepes; i++)
+  {
+    digitalWrite(stepper_step_pin, HIGH);
+    delayMicroseconds(stepper_delay_time);
+    digitalWrite(stepper_step_pin, LOW);
+    delayMicroseconds(stepper_delay_time);
+  }
 }
