@@ -23,14 +23,14 @@ void HotendUpdate();
  *    8             ==>     Not Connected
  *    9             ==>     Not Connected
  *    10             ==>    Not Connected
- *    11             ==>    D11
- *    12             ==>    D10
- *    13             ==>    D9
+ *    11             ==>    A2
+ *    12             ==>    A1
+ *    13             ==>    A0
  *    14             ==>    D8
  *    15             ==>     5V
  *    16             ==>     Gnd      */
 // LCD wireing shema in /img folder
-const int rs = 12, en = 13, d4 = 11, d5 = 10, d6 = 9, d7 = 7;
+const int rs = 12, en = 13, d4 = A2, d5 = A1, d6 = A0, d7 = 7;
 
 /*    Encoder Module  ==>   Arduino
  *    Clk              ==>     D0
@@ -104,7 +104,7 @@ void setup()
   Serial.begin(9600);
 
   current_temp = 0;
-  requred_temp = 100;
+  requred_temp = 0;
   temp_select_blink_timestemp = 0;
   display_refresh_timestemp = 0;
   temp_read_timestemp = 0;
