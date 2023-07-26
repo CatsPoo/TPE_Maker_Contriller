@@ -59,7 +59,7 @@ const int stepper_step_pin = 10;
 
 const int hotent_pwm_pin = 3;
 
-const int stepper_control_switch_pin = 12;
+const int stepper_control_switch_pin = A3;
 
 //encoder controls consts
 const int min_required_temp = 0;
@@ -163,7 +163,7 @@ void loop()
     regular_mocde();
 
   HotendUpdate();
-  
+
   if(digitalRead(stepper_control_switch_pin) == HIGH)
     StepperMove(1);
 
