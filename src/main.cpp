@@ -28,7 +28,7 @@ void StepperMove(int);
  *    11             ==>    A2
  *    12             ==>    A1
  *    13             ==>    A0
- *    14             ==>    D8
+ *    14             ==>    D7
  *    15             ==>     5V
  *    16             ==>     Gnd      */
 // LCD wireing shema in /img folder
@@ -202,7 +202,7 @@ void read_endoder_status()
       if (requred_temp >= min_required_temp + rotery_encoder_step)
         requred_temp -= rotery_encoder_step;
     }
-    Serial.println(requred_temp);
+    //Serial.println(requred_temp);
   }
   lastStateA = currentStateA;
 }
