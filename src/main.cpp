@@ -298,5 +298,7 @@ void StepperMove(int stepes)
     delayMicroseconds(stepper_delay_time);
     digitalWrite(stepper_step_pin, LOW);
     delayMicroseconds(stepper_delay_time);
+    //TODO
+    //Change this line to timers based delay instad of delay fumvrion
   }
 }
